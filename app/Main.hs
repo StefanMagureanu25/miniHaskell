@@ -7,6 +7,8 @@ import Exp
 import Parsing
 import Printing
 import REPLCommand
+import Eval
+import Sugar
 import Text.ParserCombinators.Parsec (parse)
 
 main :: IO ()
