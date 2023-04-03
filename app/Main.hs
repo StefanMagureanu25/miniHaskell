@@ -17,9 +17,4 @@ main = do
     input <- readline "miniHaskell"
     case parse replCommand "<input>" input of
         Left err -> print err >> main
-        Right cmd -> case cmd of
-                        Quit -> return ()
-                        Load s -> putStrLn ("notImplemented") >> main
-                        Eval l -> case parse exprParser "<input>" l of
-                            Left err -> print err >> main
-                            Right c -> putStrLn (showExp c) >> main
+        Right c -> (putStrLn . showExp . sugarExp . normalize . desugarExp $ c) >> main
