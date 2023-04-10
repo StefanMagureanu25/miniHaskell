@@ -38,34 +38,34 @@ fromMaybe a ma = maybe a id ma
 
 -- | The isNothing function returns 'true' iff its argument is 'nothing'.
 isNothing :: (MaybeClass m, BoolClass b) => m a -> b
-isNothing = undefined
+isNothing ma = maybe true (const false) ma
 
 -- >>> isNothing (nothing :: Maybe.Maybe a) :: Bool.Bool
 -- True
 
 -- | The isJust function returns 'true' iff its argument is of the form @'just' _@.
 isJust :: (MaybeClass m, BoolClass b) => m a -> b
-isJust = undefined
+isJust = maybe false (const true)
 
 -- >>> isJust (nothing :: Maybe.Maybe a) :: Bool.Bool
 -- False
 
 -- | The 'Functor' instance for 'MaybeClass'
 maybeFMap :: MaybeClass m => (a -> b) -> m a -> m b
-maybeFMap = undefined
+maybeFMap f ma = maybe nothing (just . f) ma
 
 -- >>> maybeFMap not (just true) :: Maybe.Maybe Bool.Bool
 -- Just False
 
 -- | The 'Monad' instance for 'MaybeClass'
 maybeBind :: MaybeClass m => (a -> m b) -> m a -> m b
-maybeBind = undefined
+maybeBind f = maybe nothing f
 
 newtype CMaybe a = CMaybe { getCMaybe :: forall b . b -> (a -> b) -> b }
 
 instance MaybeClass CMaybe where
-  nothing = undefined
-  just x = undefined
+  nothing = CMaybe (\_nothing _just -> _nothing)
+  just x = CMaybe (\_nothing _just -> _just x)
   maybe n j m = getCMaybe m n j
 
 -- >>> fromMaybe true (just false :: CMaybe CBool)
