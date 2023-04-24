@@ -6,33 +6,27 @@ import Text.Parsec.Language (emptyDef, LanguageDef)
 import Text.Parsec.Token
 import Text.Parsec (anyChar)
 import Control.Applicative (some, many, (<|>))
+import Lab2
+import Control.Applicative (many, (<|>))
 
 data REPLCommand
   = Quit
   | Load String
   | Eval String
-  deriving (Show)
 
-replDef :: LanguageDef st
-replDef = emptyDef {
-    reservedNames = [":load", ":quit"],
-    reservedOpNames = [":l", ":q"]
+quit :: Parser REPLCommand
+quit = (symbol ":quit" <|> symbol ":q") *> pure Quit
 
-repl :: TokenParser st
-repl = makeTokenParser replDef
-
-replQuit :: Parser REPLCommand
-replQuit = pure Quit <$> ((reservedOp repl ":q") <|> (reserved repl ":quit"))
+load :: Parser REPLCommand
+load
+  = do
+    symbol ":load" <|> symbol ":l"
+    f <- many anychar
+    return $ Load f
 
 
-replLoad :: Parser REPLCommand
-replLoad = do
-  ((reserved repl ":load") <|> (reservedOp repl ":l"))
-  s <- some anyChar 
-  return $ Load s
-
-replEval :: Parser REPLCommand
-replEval = Eval <$> many anyChar
+eval :: Parser REPLCommand
+eval = Eval <$> many anychar
 
 replCommand :: Parser REPLCommand
-replCommand = replQuit <|> replLoad <|> replEval
+replCommand = quit <|> load <|> eval
