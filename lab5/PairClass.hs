@@ -42,7 +42,7 @@ newtype CPair a b = CPair { getCPair :: forall c . (a -> b -> c) -> c }
 
 instance PairClass CPair where
   uncurry f p = getCPair p f
-  pair = undefined
+   pair a b = CPair (\f -> f a b)
 
 -- | converting between different instances of 'PairClass'
 fromPairClass :: (PairClass p, PairClass q) => p a b -> q a b
